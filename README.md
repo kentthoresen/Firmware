@@ -1,7 +1,7 @@
 
 # Maslow Firmware
 ====
-This is the firmware for the Maslow CNC Router
+This is the firmware for the Maslow CNC Router modified for stepper motor support.
 
 ====
 
