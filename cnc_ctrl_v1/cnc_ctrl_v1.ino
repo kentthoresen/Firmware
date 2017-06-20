@@ -10,6 +10,8 @@
     You should have received a copy of the GNU General Public License
     along with the Maslow Control Software.  If not, see <http://www.gnu.org/licenses/>.
     
+    Modified to support stepper support kent 20.06.2017
+    
     Copyright 2014-2017 Bar Smith*/
     
 #define SERIAL_RX_BUFFER_SIZE 512
