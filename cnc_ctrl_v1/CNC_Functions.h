@@ -56,7 +56,7 @@ bool zAxisAttached = false;
 #define ENB 7
 #define ENC 5
 
-#define DISTPERROT     10*6.35//#teeth*pitch of chain
+#define DISTPERROT     10*6.35//#teeth*pitch of chain 
 #define ZDISTPERROT    3.17//1/8inch in mm
 #define ENCODERSTEPS   8148.0 //7*291*4 --- 7ppr, 291:1 gear ratio, quadrature encoding
 #define ZENCODERSTEPS  7560.0 //7*270*4 --- 7ppr, 270:1 gear ratio, quadrature encoding
@@ -1062,7 +1062,7 @@ void  executeGcodeLine(String& gcodeLine){
         
         int i = 0;
         while (millis() - begin < ms){
-            leftAxis.motorGearboxEncoder.motor.directWrite(speed);
+            leftAxis.Stepper.motor.directWrite(speed);
             if (i % 10000 == 0){
                 Serial.println("pulling");                              //Keep the connection from timing out
             }

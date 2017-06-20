@@ -21,7 +21,7 @@
     #include "Arduino.h"
     
     struct LinSegment{
-        float slope  = 1;
+        float slope  = 1; 
         float intercept = 0;
         //The bounds are strict, so if the bounds are 0,1 .9 would work
         //but 1 and 0 will not

@@ -28,7 +28,7 @@
 
 Axis::Axis(int pwmPin, int directionPin1, int directionPin2, int encoderPin1, int encoderPin2, String axisName, int eepromAdr, float mmPerRotation, float encoderSteps)
 :
-motorGearboxEncoder(pwmPin, directionPin1, directionPin2, encoderPin1, encoderPin2)
+Stepper(pwmPin, directionPin1, directionPin2, encoderPin1, encoderPin2)
 {
     
     _pidController.setup(&_pidInput, &_pidOutput, &_pidSetpoint, _Kp, _Ki, _Kd, REVERSE);
@@ -48,7 +48,7 @@ motorGearboxEncoder(pwmPin, directionPin1, directionPin2, encoderPin1, encoderPi
     
     initializePID();
     
-    motorGearboxEncoder.setName(_axisName);
+    Stepper.setName(_axisName);
 }
 
 void   Axis::initializePID(){
@@ -65,7 +65,7 @@ int    Axis::write(float targetPosition){
 
 float  Axis::read(){
     //returns the true axis position
-    return (motorGearboxEncoder.encoder.read()/_encoderSteps)*_mmPerRotation;
+    return (Stepper.encoder.read()/_encoderSteps)*_mmPerRotation;
 }
 
 float  Axis::target(){
@@ -82,7 +82,7 @@ int    Axis::set(float newAxisPosition){
     //reset everything to the new value
     _axisTarget   =  newAxisPosition/_mmPerRotation;
     _pidSetpoint  =  newAxisPosition/_mmPerRotation;
-    motorGearboxEncoder.encoder.write((newAxisPosition*_encoderSteps)/_mmPerRotation);
+    Stepper.encoder.write((newAxisPosition*_encoderSteps)/_mmPerRotation);
     
 }
 
@@ -97,11 +97,11 @@ void   Axis::computePID(){
         _pidController.FlipIntegrator();
     }
     
-    _pidInput      =  motorGearboxEncoder.encoder.read()/_encoderSteps;
+    _pidInput      =  Stepper.encoder.read()/_encoderSteps;
     
     _pidController.Compute();
     
-    motorGearboxEncoder.write(_pidOutput);
+    Stepper.write(_pidOutput);
     
     /*if(_axisName[0] == 'R'){
         Serial.print(_pidSetpoint*10.0);
@@ -111,7 +111,7 @@ void   Axis::computePID(){
         Serial.println((_pidSetpoint*10.0) + _pidOutput/30.0);
     }*/
     
-    motorGearboxEncoder.computePID();
+    Stepper.computePID();
     
 }
 
@@ -123,11 +123,11 @@ void   Axis::setPIDAggressiveness(float aggressiveness){
     
     */
     
-    motorGearboxEncoder.setPIDAggressiveness(aggressiveness);
+    Stepper.setPIDAggressiveness(aggressiveness);
 }
 
 float  Axis::error(){
-    return ((motorGearboxEncoder.encoder.read()/_encoderSteps) - _pidSetpoint)*_mmPerRotation;
+    return ((Stepper.encoder.read()/_encoderSteps) - _pidSetpoint)*_mmPerRotation;
 }
 
 void   Axis::changePitch(float newPitch){
@@ -147,19 +147,19 @@ void   Axis::changeEncoderResolution(int newResolution){
 
 int    Axis::detach(){
     
-    if (motorGearboxEncoder.motor.attached()){
+    if (Stepper.motor.attached()){
         _writeFloat (_eepromAdr+SIZEOFFLOAT, read());      //Store the axis position
         EEPROM.write(_eepromAdr, EEPROMVALIDDATA);
         
     }
     
-    motorGearboxEncoder.motor.detach();
+    Stepper.motor.detach();
     
     return 1;
 }
 
 int    Axis::attach(){
-     motorGearboxEncoder.motor.attach();
+     Stepper.motor.attach();
      return 1;
 }
 
@@ -170,7 +170,7 @@ bool   Axis::attached(){
     
     */
     
-    return motorGearboxEncoder.motor.attached();
+    return Stepper.motor.attached();
 }
 
 void   Axis::hold(){
@@ -279,17 +279,17 @@ void   Axis::test(){
     Serial.print("<Idle,MPos:0,0,0,WPos:0.000,0.000,0.000>");
     
     int i = 0;
-    double encoderPos = motorGearboxEncoder.encoder.read(); //record the position now
+    double encoderPos = Stepper.encoder.read(); //record the position now
     
     //move the motor
     while (i < 1000){
-        motorGearboxEncoder.motor.directWrite(255);
+        Stepper.motor.directWrite(255);
         i++;
         delay(1);
     }
     
     //check to see if it moved
-    if(encoderPos - motorGearboxEncoder.encoder.read() > 500){
+    if(encoderPos - Stepper.encoder.read() > 500){
         Serial.println("Direction 1 - Pass");
     }
     else{
@@ -297,26 +297,26 @@ void   Axis::test(){
     }
     
     //record the position again
-    encoderPos = motorGearboxEncoder.encoder.read();
+    encoderPos = Stepper.encoder.read();
     Serial.print("<Idle,MPos:0,0,0,WPos:0.000,0.000,0.000>");
     
     //move the motor in the other direction
     i = 0;
     while (i < 1000){
-        motorGearboxEncoder.motor.directWrite(-255);
+        Stepper.motor.directWrite(-255);
         i++;
         delay(1);
     }
     
     //check to see if it moved
-    if(encoderPos - motorGearboxEncoder.encoder.read() < -500){
+    if(encoderPos - Stepper.encoder.read() < -500){
         Serial.println("Direction 2 - Pass");
     }
     else{
         Serial.println("Direction 2 - Fail");
-    }
+    } 
     
     //stop the motor
-    motorGearboxEncoder.motor.directWrite(0);
+    Stepper.motor.directWrite(0);
     Serial.print("<Idle,MPos:0,0,0,WPos:0.000,0.000,0.000>");
 }
